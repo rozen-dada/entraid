@@ -9,7 +9,6 @@ local claims = std.extVar('claims');
         else if std.objectHas(claims, "upn") && claims.upn != "" then claims.upn
         else "",
 
-      name: if std.objectHas(claims, "name") then claims.name else "",
       first_name: if std.objectHas(claims, "given_name") then claims.given_name else "",
       last_name: if std.objectHas(claims, "family_name") then claims.family_name else "",
     },
