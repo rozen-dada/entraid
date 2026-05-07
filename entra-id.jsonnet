@@ -10,9 +10,9 @@ local groups =
   else [];
 
 local mappedGroups = std.filter(function(x) x != "", [
-  if std.member(adminGroupId, groups) then "Organization Admins" else "",
-  if std.member(editorGroupId, groups) then "Editor" else "",
-  if std.member(viewerGroupId, groups) then "Viewer" else "",
+  if std.member(groups, adminGroupId) then "Organization Admins" else "",
+  if std.member(groups, editorGroupId) then "Editor" else "",
+  if std.member(groups, viewerGroupId) then "Viewer" else "",
 ]);
 
 {
