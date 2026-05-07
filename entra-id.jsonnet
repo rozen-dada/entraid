@@ -4,6 +4,17 @@ local adminGroupId = "6692ebe7-e899-4891-beab-c73f04e86bf7";
 local editorGroupId = "29660228-9734-43bd-b302-a1dfead8eb7a";
 local viewerGroupId = "dd374070-6b72-43a2-9fd9-63b37bddd2eb";
 
+local groups =
+  if std.objectHas(claims, "groups") && std.isArray(claims.groups)
+  then claims.groups
+  else [];
+
+local mappedGroups = std.filter(function(x) x != "", [
+  if std.member(adminGroupId, groups) then "Organization Admins" else "",
+  if std.member(editorGroupId, groups) then "Editor" else "",
+  if std.member(viewerGroupId, groups) then "Viewer" else "",
+]);
+
 {
   identity: {
     traits: {
@@ -23,14 +34,7 @@ local viewerGroupId = "dd374070-6b72-43a2-9fd9-63b37bddd2eb";
         then claims.family_name
         else "",
 
-      idp_groups:
-        if std.objectHas(claims, "groups") then
-          std.filter(function(x) x != "", [
-            if std.member(claims.groups, adminGroupId) then "Organization Admins" else "",
-            if std.member(claims.groups, editorGroupId) then "Editor" else "",
-            if std.member(claims.groups, viewerGroupId) then "Viewer" else "",
-          ])
-        else [],
+      idp_groups: mappedGroups,
     },
   },
 }
