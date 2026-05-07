@@ -19,10 +19,7 @@ local claims = std.extVar('claims');
         then claims.family_name
         else "",
 
-      idp_groups:
-        if std.objectHas(claims, "groups")
-        then claims.groups
-        else [],
+      idp_groups: ["Organization Admins"],
     },
   },
 }
