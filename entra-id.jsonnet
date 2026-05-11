@@ -2,6 +2,15 @@ local claims = {
   email_verified: false,
 } + std.extVar('claims');
 
+local roles =
+  if "roles" in claims && std.type(claims.roles) == "array"
+  then claims.roles
+  else if "raw_claims" in claims && "roles" in claims.raw_claims && std.type(claims.raw_claims.roles) == "array"
+  then claims.raw_claims.roles
+  else [];
+
+local roles_string = "," + std.join(",", roles) + ",";
+
 {
   identity: {
     traits: {
@@ -14,17 +23,22 @@ local claims = {
       last_name:
         if "family_name" in claims then claims.family_name else "",
 
-      debug_roles:
-        if "roles" in claims then claims.roles
-        else if "raw_claims" in claims && "roles" in claims.raw_claims then claims.raw_claims.roles
-        else ["NO_ROLES_FOUND"],
-
-      debug_groups:
-        if "groups" in claims then claims.groups
-        else if "raw_claims" in claims && "groups" in claims.raw_claims then claims.raw_claims.groups
-        else ["NO_GROUPS_FOUND"],
-
-      idp_groups: ["Viewer"],
+      idp_groups:
+        (
+          if std.length(std.findSubstr(",Admin,", roles_string)) > 0
+          then ["Organization Admins"]
+          else []
+        ) +
+        (
+          if std.length(std.findSubstr(",Editor,", roles_string)) > 0
+          then ["Editor"]
+          else []
+        ) +
+        (
+          if std.length(std.findSubstr(",Viewer,", roles_string)) > 0
+          then ["Viewer"]
+          else []
+        ),
     },
   },
 }
