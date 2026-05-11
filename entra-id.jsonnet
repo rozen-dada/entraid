@@ -2,9 +2,12 @@ local claims = {
   email_verified: false,
 } + std.extVar('claims');
 
+local raw =
+  if "raw_claims" in claims then claims.raw_claims else {};
+
 local roles =
-  if "roles" in claims && std.type(claims.roles) == "array"
-  then claims.roles
+  if "roles" in raw && std.type(raw.roles) == "array"
+  then raw.roles
   else [];
 
 local roles_string = "," + std.join(",", roles) + ",";
