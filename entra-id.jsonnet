@@ -5,6 +5,9 @@ local roles =
   then claims.roles
   else [];
 
+local hasRole(role) =
+  std.length(std.findSubstr(role, std.join(",", roles))) > 0;
+
 {
   identity: {
     traits: {
@@ -22,9 +25,9 @@ local roles =
 
       idp_groups:
         std.flattenArrays([
-          if std.member("Admin", roles) then ["Organization Admins"] else [],
-          if std.member("Editor", roles) then ["Editor"] else [],
-          if std.member("Viewer", roles) then ["Viewer"] else [],
+          if hasRole("Admin") then ["Organization Admins"] else [],
+          if hasRole("Editor") then ["Editor"] else [],
+          if hasRole("Viewer") then ["Viewer"] else [],
         ]),
     },
   },
