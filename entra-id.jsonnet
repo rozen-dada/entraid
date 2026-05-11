@@ -2,39 +2,29 @@ local claims = {
   email_verified: false,
 } + std.extVar('claims');
 
-local raw =
-  if "raw_claims" in claims then claims.raw_claims else {};
-
-local roles =
-  if "roles" in raw && std.type(raw.roles) == "array"
-  then raw.roles
-  else [];
-
-local roles_string = "," + std.join(",", roles) + ",";
-
 {
   identity: {
     traits: {
-      [if "email" in claims then "email" else null]: claims.email,
-      [if "given_name" in claims then "first_name" else null]: claims.given_name,
-      [if "family_name" in claims then "last_name" else null]: claims.family_name,
+      email:
+        if "email" in claims then claims.email else "",
 
-      idp_groups:
-        (
-          if std.length(std.findSubstr(",Admin,", roles_string)) > 0
-          then ["Organization Admins"]
-          else []
-        ) +
-        (
-          if std.length(std.findSubstr(",Editor,", roles_string)) > 0
-          then ["Editor"]
-          else []
-        ) +
-        (
-          if std.length(std.findSubstr(",Viewer,", roles_string)) > 0
-          then ["Viewer"]
-          else []
-        ),
+      first_name:
+        if "given_name" in claims then claims.given_name else "",
+
+      last_name:
+        if "family_name" in claims then claims.family_name else "",
+
+      debug_roles:
+        if "roles" in claims then claims.roles
+        else if "raw_claims" in claims && "roles" in claims.raw_claims then claims.raw_claims.roles
+        else ["NO_ROLES_FOUND"],
+
+      debug_groups:
+        if "groups" in claims then claims.groups
+        else if "raw_claims" in claims && "groups" in claims.raw_claims then claims.raw_claims.groups
+        else ["NO_GROUPS_FOUND"],
+
+      idp_groups: ["Viewer"],
     },
   },
 }
