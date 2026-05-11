@@ -1,34 +1,37 @@
-local claims = std.extVar('claims');
+local claims = {
+  email_verified: false,
+} + std.extVar('claims');
 
 local roles =
-  if std.objectHas(claims, "roles") && std.type(claims.roles) == "array"
+  if "roles" in claims && std.type(claims.roles) == "array"
   then claims.roles
   else [];
 
-local hasRole(role) =
-  std.length(std.findSubstr(role, std.join(",", roles))) > 0;
+local roles_string = "," + std.join(",", roles) + ",";
 
 {
   identity: {
     traits: {
-      email:
-        if std.objectHas(claims, "email") && claims.email != "" then claims.email
-        else if std.objectHas(claims, "preferred_username") && claims.preferred_username != "" then claims.preferred_username
-        else if std.objectHas(claims, "upn") && claims.upn != "" then claims.upn
-        else "",
-
-      first_name:
-        if std.objectHas(claims, "given_name") then claims.given_name else "",
-
-      last_name:
-        if std.objectHas(claims, "family_name") then claims.family_name else "",
+      [if "email" in claims then "email" else null]: claims.email,
+      [if "given_name" in claims then "first_name" else null]: claims.given_name,
+      [if "family_name" in claims then "last_name" else null]: claims.family_name,
 
       idp_groups:
-        std.flattenArrays([
-          if hasRole("Admin") then ["Organization Admins"] else [],
-          if hasRole("Editor") then ["Editor"] else [],
-          if hasRole("Viewer") then ["Viewer"] else [],
-        ]),
+        (
+          if std.length(std.findSubstr(",Admin,", roles_string)) > 0
+          then ["Organization Admins"]
+          else []
+        ) +
+        (
+          if std.length(std.findSubstr(",Editor,", roles_string)) > 0
+          then ["Editor"]
+          else []
+        ) +
+        (
+          if std.length(std.findSubstr(",Viewer,", roles_string)) > 0
+          then ["Viewer"]
+          else []
+        ),
     },
   },
 }
