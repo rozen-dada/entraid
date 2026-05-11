@@ -1,7 +1,9 @@
 local claims = std.extVar('claims');
 
 local roles =
-  if std.objectHas(claims, "roles") then claims.roles else [];
+  if std.objectHas(claims, "roles") && std.type(claims.roles) == "array"
+  then claims.roles
+  else [];
 
 {
   identity: {
@@ -20,9 +22,9 @@ local roles =
 
       idp_groups:
         std.flattenArrays([
-          if std.member(roles, "Admin") then ["Organization Admins"] else [],
-          if std.member(roles, "Editor") then ["Editor"] else [],
-          if std.member(roles, "Viewer") then ["Viewer"] else [],
+          if std.member("Admin", roles) then ["Organization Admins"] else [],
+          if std.member("Editor", roles) then ["Editor"] else [],
+          if std.member("Viewer", roles) then ["Viewer"] else [],
         ]),
     },
   },
