@@ -1,7 +1,7 @@
 local claims = std.extVar('claims');
 
-local entra_groups =
-  if std.objectHas(claims, "groups") then claims.groups else [];
+local roles =
+  if std.objectHas(claims, "roles") then claims.roles else [];
 
 {
   identity: {
@@ -20,20 +20,9 @@ local entra_groups =
 
       idp_groups:
         std.flattenArrays([
-          // Entra Admin group → Paralus Organization Admins
-          if std.member(entra_groups, "f8e443a8-aadc-4d17-a45e-6a5defe0433a")
-          then ["Organization Admins"]
-          else [],
-
-          // Entra Editor group → Paralus Editor
-          if std.member(entra_groups, "d5055f14-ea82-4ce6-80bc-27059f26eaac")
-          then ["Editor"]
-          else [],
-
-          // Entra Viewer group → Paralus Viewer
-          if std.member(entra_groups, "57852313-6da5-4ccd-8219-14b6886b6aff")
-          then ["Viewer"]
-          else [],
+          if std.member(roles, "Admin") then ["Organization Admins"] else [],
+          if std.member(roles, "Editor") then ["Editor"] else [],
+          if std.member(roles, "Viewer") then ["Viewer"] else [],
         ]),
     },
   },
